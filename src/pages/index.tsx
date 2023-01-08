@@ -1,11 +1,12 @@
 import Head from "next/head";
-import Image from "next/image";
 import { Inter } from "@next/font/google";
-import styles from "../styles/Home.module.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+
+const btn = ""
+
   return (
     <>
       <Head>
@@ -20,9 +21,16 @@ export default function Home() {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <h1 className="text-3xl font-bold underline">
-        Hello world!
-      </h1>
+      <div className="h-screen w-screen items-center flex flex-col justify-center">
+        <div className="text-xl text-center ">
+          Which Pokémon is Roundest?
+        </div>
+        <div className="p-2"></div>
+        <div className="flex justify-between border rounded-lg shadow-md max-w-xl">
+          <div className="w-16 h-16 p-8 m-8 bg-green-800"></div>
+          <div className="w-16 h-16 p-8 m-8 bg-yellow-800"></div>
+        </div>
+      </div>
     </>
   );
 }
