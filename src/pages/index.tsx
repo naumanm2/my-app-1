@@ -1,11 +1,22 @@
 import Head from "next/head";
 import { Inter } from "@next/font/google";
-import { trpc } from "../utils/trpc";
+import { getOptionsForVote } from "../utils/getRandomPokemon";
+import { useEffect, useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-const btn = ""
+
+  //prevent hydration error
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+  if (!hasMounted) {
+    return null;
+  }
+
+  const [first, second] = getOptionsForVote();
 
   return (
     <>
@@ -27,8 +38,12 @@ const btn = ""
         </div>
         <div className="p-2"></div>
         <div className="flex justify-between border rounded-lg shadow-md max-w-xl">
-          <div className="w-16 h-16 p-8 m-8 bg-green-800"></div>
-          <div className="w-16 h-16 p-8 m-8 bg-yellow-800"></div>
+          <div className="w-16 h-16 p-8 m-8 bg-green-800">
+            {first}
+          </div>
+          <div className="w-16 h-16 p-8 m-8 bg-yellow-800">
+            {second}
+          </div>
         </div>
       </div>
     </>
