@@ -1,22 +1,27 @@
 import Head from "next/head";
-import { Inter } from "@next/font/google";
+import Image from "next/image";
 import { getOptionsForVote } from "../utils/getRandomPokemon";
 import { useEffect, useState } from "react";
+import { trpc } from "@/utils/trpc";
+import { inferRouterOutputs } from "@trpc/server";
+import { AppRouter } from "@/server/routers/_app";
 
-const inter = Inter({ subsets: ["latin"] });
+const btn =
+  "items-center px-3 py-1.5 border border-gray-300 shadow-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500";
 
 export default function Home() {
+  const [ids, setIds] = useState(() => getOptionsForVote());
+  const [first, second] = ids;
 
-  //prevent hydration error
-  const [hasMounted, setHasMounted] = useState(false);
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-  if (!hasMounted) {
+  const firstPokemon = trpc["get-pokemon-by-id"].useQuery({
+    id: first,
+  });
+  const secondPokemon = trpc["get-pokemon-by-id"].useQuery({
+    id: second,
+  });
+
+  if (firstPokemon.isLoading || secondPokemon.isLoading)
     return null;
-  }
-
-  const [first, second] = getOptionsForVote();
 
   return (
     <>
@@ -37,15 +42,37 @@ export default function Home() {
           Which Pokémon is Roundest?
         </div>
         <div className="p-2"></div>
-        <div className="flex justify-between border rounded-lg shadow-md max-w-xl">
-          <div className="w-16 h-16 p-8 m-8 bg-green-800">
-            {first}
-          </div>
-          <div className="w-16 h-16 p-8 m-8 bg-yellow-800">
-            {second}
-          </div>
+        <div className="p-6 flex justify-between border rounded-lg shadow-md max-w-xl">
+          {firstPokemon && (
+            <PokemonListing pokemon={firstPokemon.data} />
+          )}
+          <div className="m-auto">or</div>
+          {secondPokemon && (
+            <PokemonListing pokemon={secondPokemon.data} />
+          )}
         </div>
       </div>
     </>
   );
 }
+
+type PokemonFromServer =
+  inferRouterOutputs<AppRouter>["get-pokemon-by-id"];
+
+const PokemonListing: React.FC<{
+  pokemon: PokemonFromServer;
+}> = (props) => {
+  return (
+    <div className="flex flex-col text-center items-center">
+      <Image
+        src={props.pokemon.sprite.front_default!}
+        alt={props.pokemon.name!}
+        width={256}
+        height={256}
+      />
+      <div className="text-m capitalize">{props.pokemon.name}</div>
+      <div className="pt-2"></div>
+      <button className={btn}>dis one</button>
+    </div>
+  );
+};

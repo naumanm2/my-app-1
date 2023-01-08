@@ -1,5 +1,3 @@
-import { PokemonClient } from "pokenode-ts";
-
 const MAX_DEX_ID = 493;
 
 export const getRandomPokemon: (
